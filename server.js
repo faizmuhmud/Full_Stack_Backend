@@ -59,6 +59,14 @@ app.post('/collection/:collectionName', (req, res, next) => {
         res.send(result.ops || [result]);
     });
 });
+
+// Get single document by ID
+app.get('/collection/:collectionName/:id', (req, res, next) => { 
+    req.collection.findOne({ _id: new ObjectID(req.params.id) }, (e, result) => { 
+        if (e) return next(e);
+        res.send(result);
+    });
+});
  
 app.listen(port, () => {
     console.log(`Express.js server running at localhost:${port}`);
