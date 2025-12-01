@@ -1,4 +1,6 @@
 const express = require('express');
+const path = require('path');
+const fs = require('fs');
 const app = express();
  
 app.use(express.json());
@@ -17,6 +19,35 @@ app.use(function(req, res, next) {
     console.log("Request IP: " + req.url);
     console.log("Request date: " + new Date());
     next();
+});
+
+// Static file middleware for images with error handling
+app.use('/images', (req, res, next) => {
+    const imagePath = path.join(__dirname, 'images', req.url);
+    
+    // Check if file exists
+    fs.access(imagePath, fs.constants.F_OK, (err) => {
+        if (err) {
+            // File doesn't exist, send error message
+            console.error('Image not found:', imagePath);
+            return res.status(404).json({ 
+                error: 'Image not found',
+                message: `The requested image '${req.url}' does not exist`,
+                path: req.url
+            });
+        }
+        
+        // File exists, serve it
+        res.sendFile(imagePath, (err) => {
+            if (err) {
+                console.error('Error sending file:', err);
+                res.status(500).json({ 
+                    error: 'Error serving image',
+                    message: err.message 
+                });
+            }
+        });
+    });
 });
  
 const MongoClient = require('mongodb').MongoClient;
