@@ -44,6 +44,22 @@ app.param('collectionName', (req, res, next, collectionName) => {
     return next();
 });
  
+// Retrieve all objects from a collection
+app.get('/collection/:collectionName', (req, res, next) => {
+    req.collection.find({}).toArray((e, results) => {
+        if (e) return next(e);
+        res.send(results);
+    });
+});
+ 
+// Create new document in collection
+app.post('/collection/:collectionName', (req, res, next) => {
+    req.collection.insertOne(req.body, (e, result) => {
+        if (e) return next(e);
+        res.send(result.ops || [result]);
+    });
+});
+ 
 app.listen(port, () => {
     console.log(`Express.js server running at localhost:${port}`);
 });
