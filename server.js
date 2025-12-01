@@ -19,9 +19,23 @@ app.use(function(req, res, next) {
     console.log("Request date: " + new Date());
     next();
 });
+ 
+const MongoClient = require('mongodb').MongoClient;
+const ObjectID = require('mongodb').ObjectID;
+ 
+let db;
+
+MongoClient.connect('mongodb+srv://faizmuhmud9_db_user:Faiz123456@cluster0.muu3ydh.mongodb.net/', (err, client) => { 
+    if (err) {
+        console.error('MongoDB connection error:', err);
+        return;
+    }
+    db = client.db('Store');
+    console.log('Connected to MongoDB');
+});
 
 app.get('/', (req, res) => {
-    res.send('Server is running with logging');
+    res.send('Select a collection, e.g., /collection/lessons');
 });
  
 app.listen(port, () => {
