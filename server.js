@@ -68,7 +68,7 @@ app.get('/collection/:collectionName/:id', (req, res, next) => {
     });
 });
 
-// Update document by ID
+// Update document by ID (for updating spaces after purchase)
 app.put('/collection/:collectionName/:id', (req, res, next) => { 
     req.collection.updateOne( 
         { _id: new ObjectID(req.params.id) }, 
@@ -89,6 +89,22 @@ app.delete('/collection/:collectionName/:id', (req, res, next) => {
             res.send((result.deletedCount === 1) ? { msg: 'success' } : { msg: 'error' });
         }
     );
+});    
+
+// Search endpoint for lessons
+app.get('/search/:collectionName', (req, res, next) => {
+    const searchQuery = req.query.q;
+    req.collection = db.collection(req.params.collectionName);
+    
+    req.collection.find({
+        $or: [
+            { subject: { $regex: searchQuery, $options: 'i' } },
+            { location: { $regex: searchQuery, $options: 'i' } }
+        ]
+    }).toArray((e, results) => {
+        if (e) return next(e);
+        res.send(results);
+    });
 });
  
 app.listen(port, () => {
