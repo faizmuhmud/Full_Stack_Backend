@@ -13,8 +13,15 @@ app.use((req, res, next) => {
     next();
 });
 
+// Request logging middleware
+app.use(function(req, res, next) {
+    console.log("Request IP: " + req.url);
+    console.log("Request date: " + new Date());
+    next();
+});
+
 app.get('/', (req, res) => {
-    res.send('Server is running with CORS enabled');
+    res.send('Server is running with logging');
 });
  
 app.listen(port, () => {
