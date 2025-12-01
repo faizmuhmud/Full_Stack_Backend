@@ -13,7 +13,6 @@ app.use((req, res, next) => {
     next();
 });
 
-// Request logging middleware
 app.use(function(req, res, next) {
     console.log("Request IP: " + req.url);
     console.log("Request date: " + new Date());
@@ -38,7 +37,6 @@ app.get('/', (req, res, next) => {
     res.send('Select a collection, e.g., /collection/lessons');
 });
  
-// Collection parameter middleware
 app.param('collectionName', (req, res, next, collectionName) => {
     req.collection = db.collection(collectionName);
     return next();
@@ -105,6 +103,27 @@ app.get('/search/:collectionName', (req, res, next) => {
         if (e) return next(e);
         res.send(results);
     });
+});
+
+// Create order endpoint
+app.post('/orders', (req, res, next) => {
+    const order = {
+        customer: req.body.customer,
+        items: req.body.items,
+        total: req.body.total,
+        date: new Date()
+    };
+    
+    db.collection('orders').insertOne(order, (e, result) => {
+        if (e) return next(e);
+        res.send({ success: true, orderId: result.insertedId });
+    });
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send({ error: err.message });
 });
  
 app.listen(port, () => {
