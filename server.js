@@ -67,6 +67,29 @@ app.get('/collection/:collectionName/:id', (req, res, next) => {
         res.send(result);
     });
 });
+
+// Update document by ID
+app.put('/collection/:collectionName/:id', (req, res, next) => { 
+    req.collection.updateOne( 
+        { _id: new ObjectID(req.params.id) }, 
+        { $set: req.body },
+        (e, result) => { 
+            if (e) return next(e);
+            res.send((result.matchedCount === 1) ? { msg: 'success' } : { msg: 'error' });
+        }
+    );
+});
+
+// Delete document by ID
+app.delete('/collection/:collectionName/:id', (req, res, next) => { 
+    req.collection.deleteOne( 
+        { _id: new ObjectID(req.params.id) }, 
+        (e, result) => { 
+            if (e) return next(e);
+            res.send((result.deletedCount === 1) ? { msg: 'success' } : { msg: 'error' });
+        }
+    );
+});
  
 app.listen(port, () => {
     console.log(`Express.js server running at localhost:${port}`);
