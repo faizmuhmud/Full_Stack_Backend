@@ -33,9 +33,15 @@ MongoClient.connect('mongodb+srv://faizmuhmud9_db_user:Faiz123456@cluster0.muu3y
     db = client.db('Store');
     console.log('Connected to MongoDB');
 });
-
-app.get('/', (req, res) => {
+ 
+app.get('/', (req, res, next) => {
     res.send('Select a collection, e.g., /collection/lessons');
+});
+ 
+// Collection parameter middleware
+app.param('collectionName', (req, res, next, collectionName) => {
+    req.collection = db.collection(collectionName);
+    return next();
 });
  
 app.listen(port, () => {
